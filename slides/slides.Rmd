@@ -7,8 +7,8 @@ author: |
     | Paweł Sakowski
     | Department of Quantitative Finance
 date: |
- | academic year 2023/2024
- | ![](img/WNE_UW_EN_zwykly.pdf)
+ | academic year 2024/2025
+ | ![](img/WNE_UW_EN.pdf)
 fontsize: 10pt
 output: 
   beamer_presentation:
@@ -43,7 +43,17 @@ library(RQuantLib)
 
 # Options
 
-In finance, an **option** is an agreement, which gives the holder a right for **buy** or **sell** a certain underlying instrument for a given price (*exercise price*) at a given moment in futures (*expiry date*).
+In finance, an **option** is: 
+
+* an agreement, which gives the holder a **right** 
+* to **buy** or to **sell** 
+* a certain underlying instrument 
+* for a given price (*exercise price*) 
+* at a given moment in futures (*expiry date*).
+
+Since the option offers a right, not an obligation, the holder can decide whether to exercise the option or not.
+
+That right has its price - the price of the option, also called **option premium**.
 
 # Underlying instruments
 
@@ -105,7 +115,7 @@ We can distinguish two basic option types:
 * Holder of the put option will make use of that right if the current market price of underlying instrument $(S)$ is less than the strike price $(X)$. 
 
 # Four basic payoff profiles
-
+\small
 To illustrate the payoff profiles, we take (arbitrarily) following assumptions:
 
 ```{r}
@@ -120,9 +130,10 @@ b     <- r - q
 Price of the European call is:
 ```{r}
 library(RQuantLib)
-(price <- EuropeanOption(type = "call", underlying = 110, strike = X,
-                          dividendYield = q, riskFreeRate = r, 
-                          maturity = Time, volatility = sigma)$value)
+(price <- 
+    EuropeanOption(type = "call", underlying = 110, strike = X,
+                   dividendYield = q, riskFreeRate = r, 
+                   maturity = Time, volatility = sigma)$value)
 ```
 (see next slides for the Black-Scholes formula)
 
@@ -133,10 +144,10 @@ We will use the following code:
 ```{r, eval = F}
 library(tidyverse); library(ggthemes)
 S <- seq(90, 140, 1)
-longCallPayoffs <- sapply(S, function(S) max(S - X, 0))
-data.frame(x = S, y = longCallPayoffs - price) %>%
+longCallPayoffs <- map_dbl(S, \(S) max(S - X, 0))
+tibble(x = S, y = longCallPayoffs - price) |> 
   ggplot(aes(x = x, y = y)) + 
-  geom_line(size = 1, col = "red") +
+  geom_line(linewidth = 1, col = "red") +
   ylim(-10, 20) + theme_minimal() +
   labs(subtitle = paste0("Black-Scholes premium, X = ", X,
                          ", ttm = ", Time,
@@ -148,7 +159,7 @@ data.frame(x = S, y = longCallPayoffs - price) %>%
        title = "payoff profile for long European call option", 
        caption = "Source: own calculations") +
   geom_hline(yintercept = 0, linetype = "solid", 
-             color = "black", size = 0.25) 
+             color = "black", linewidth = 0.25) 
 ```
 
 # Long Call 
@@ -156,10 +167,10 @@ data.frame(x = S, y = longCallPayoffs - price) %>%
 ```{r, echo = F, warning=F}
 library(tidyverse); library(ggthemes)
 S <- seq(90, 140, 1)
-longCallPayoffs <- sapply(S, function(S) max(S - X, 0))
-data.frame(x = S, y = longCallPayoffs - price) %>%
+longCallPayoffs <- map_dbl(S, \(S) max(S - X, 0))
+tibble(x = S, y = longCallPayoffs - price) |> 
   ggplot(aes(x = x, y = y)) + 
-  geom_line(size = 1, col = "red") +
+  geom_line(linewidth = 1, col = "red") +
   ylim(-10, 20) + theme_minimal() +
   labs(subtitle = paste0("Black-Scholes premium, X = ", X,
                          ", ttm = ", Time,
@@ -171,16 +182,15 @@ data.frame(x = S, y = longCallPayoffs - price) %>%
        title = "payoff profile for long European call option", 
        caption = "Source: own calculations") +
   geom_hline(yintercept = 0, linetype = "solid", 
-             color = "black", size = 0.25) 
+             color = "black", linewidth = 0.25) 
 ```
 
 # Short Call 
 
 ```{r, echo = F, warning=F}
-library(tidyverse); library(ggthemes)
-data.frame(x = S, y = price - longCallPayoffs) %>%
+data.frame(x = S, y = price - longCallPayoffs) |> 
   ggplot(aes(x = x, y = y)) + 
-  geom_line(size = 1, col = "red") +
+  geom_line(linewidth = 1, col = "red") +
   ylim(-20, 10) + theme_minimal() +
   labs(subtitle = paste0("Black-Scholes premium, X = ", X,
                          ", ttm = ", Time,
@@ -192,18 +202,17 @@ data.frame(x = S, y = price - longCallPayoffs) %>%
        title = "payoff profile for short European call option", 
        caption = "Source: own calculations") +
   geom_hline(yintercept = 0, linetype = "solid", 
-             color = "black", size = 0.25) 
+             color = "black", linewidth = 0.25) 
 ```
 
 # Long Put 
 
 ```{r, echo = F, warning=F}
-library(tidyverse); library(ggthemes)
 S <- seq(80, 130, 1)
-longPutPayoffs <- sapply(S, function(S) max(X - S, 0))
-data.frame(x = S, y = longPutPayoffs - price) %>%
+longPutPayoffs <- map_dbl(S, \(S) max(X - S, 0))
+tibble(x = S, y = longPutPayoffs - price) |> 
   ggplot(aes(x = x, y = y)) + 
-  geom_line(size = 1, col = "red") +
+  geom_line(linewidth = 1, col = "red") +
   ylim(-10, 20) + theme_minimal() +
   labs(subtitle = paste0("Black-Scholes premium, X = ", X,
                          ", ttm = ", Time,
@@ -215,16 +224,15 @@ data.frame(x = S, y = longPutPayoffs - price) %>%
        title = "payoff profile for long European put option", 
        caption = "Source: own calculations") +
   geom_hline(yintercept = 0, linetype = "solid", 
-             color = "black", size = 0.25) 
+             color = "black", linewidth = 0.25) 
 ```
 
 # Short Put 
 
 ```{r, echo = F, warning=F}
-library(tidyverse); library(ggthemes)
-data.frame(x = S, y = price - longPutPayoffs) %>%
+tibble(x = S, y = price - longPutPayoffs) |> 
   ggplot(aes(x = x, y = y)) + 
-  geom_line(size = 1, col = "red") +
+  geom_line(linewidth = 1, col = "red") +
   ylim(-20, 10) + theme_minimal() +
   labs(subtitle = paste0("Black-Scholes premium, X = ", X,
                          ", ttm = ", Time,
@@ -236,7 +244,7 @@ data.frame(x = S, y = price - longPutPayoffs) %>%
        title = "payoff profile for short European put option", 
        caption = "Source: own calculations") +
   geom_hline(yintercept = 0, linetype = "solid", 
-             color = "black", size = 0.25) 
+             color = "black", linewidth = 0.25) 
 ```
 
 # Exercising the option contract
@@ -407,30 +415,30 @@ where for European call $f (S) = (S - K)_{+}$.
 
 ```{r, eval = F}
 set.seed(123)
-data.frame(
-  x = 1:1000,
-  y1 = exp(cumsum(rnorm(1000, 0 , 0.02))),
-  y2 = exp(cumsum(rnorm(1000, 0 , 0.02))),
+tibble(
+  t = 1:1000,
+  y1 = exp(cumsum(rnorm(1000, 0, 0.02))),
+  y2 = exp(cumsum(rnorm(1000, 0, 0.02))),
   # ... some code removed here ...
-  y10 = exp(cumsum(rnorm(1000, 0 , 0.02)))
-) %>%
-  gather(key = "variable", value = "value", -x) %>%
-  ggplot(aes(x = x, y = value)) + 
-  geom_line(size = 0.25, aes(col = variable)) +
+  y10 = exp(cumsum(rnorm(1000, 0, 0.02)))
+) |> 
+  pivot_longer(-t) |> 
+  ggplot(aes(x = t, y = value)) + 
+  geom_line(linewidth = 0.25, aes(col = name)) +
   theme_minimal() +
   labs(title = "simulated paths of underlying prices", 
        y = "price", x = "intervals (time)", 
        caption = "Source: own calculations") +
   geom_hline(yintercept = 0, linetype = "solid", 
-             color = "black", size = 0.1) 
+             color = "black", linewidth = 0.1)
 ```
 
 # Monte Carlo simulations
 
 ```{r, eval = T, echo = F}
 set.seed(123)
-data.frame(
-  x = 1:1000,
+tibble(
+  t = 1:1000,
   y1 = exp(cumsum(rnorm(1000, 0 , 0.02))),
   y2 = exp(cumsum(rnorm(1000, 0 , 0.02))),
   y3 = exp(cumsum(rnorm(1000, 0 , 0.02))),
@@ -441,15 +449,16 @@ data.frame(
   y8 = exp(cumsum(rnorm(1000, 0 , 0.02))),
   y9 = exp(cumsum(rnorm(1000, 0 , 0.02))),
   y10 = exp(cumsum(rnorm(1000, 0 , 0.02)))
-) %>%
-  gather(key = "variable", value = "value", -x) %>%
-  ggplot(aes(x = x, y = value)) + 
-  geom_line(size = 0.25, aes(col = variable)) +
+) |> 
+  pivot_longer(-t) |> 
+  ggplot(aes(x = t, y = value)) + 
+  geom_line(linewidth = 0.25, aes(col = name)) +
   theme_minimal() +
   labs(title = "simulated paths of underlying prices", 
        y = "price", x = "intervals (time)", 
        caption = "Source: own calculations") +
-  geom_hline(yintercept = 0, linetype = "solid", color = "black", size = 0.1) 
+  geom_hline(yintercept = 0, linetype = "solid", 
+             color = "black", linewidth = 0.1) 
 ```
 
 # Accuracy of results in the MC experiments
