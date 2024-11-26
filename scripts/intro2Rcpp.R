@@ -1,4 +1,4 @@
-z####################################################################
+####################################################################
 # APPLIED FINANCE                                                  #
 # Path-dependent option pricing with Monte Carlo and Rcpp package  #
 # labs01: Introduction to the Rcpp package                         #
